@@ -1,15 +1,21 @@
 package main
 
 import (
+	_ "embed"
 	"log"
+	"strings"
 
 	"github.com/miekg/dns"
 
 	"github.com/sujay1844/swiftie-dns/swiftiedns"
 )
 
+//go:embed data/ts_lyrics.csv
+var lyricsFile string
+
 func main() {
-	swiftiedns.InitDB("./data/ts_lyrics.csv")
+	lyricsFileReader := strings.NewReader(lyricsFile)
+	swiftiedns.InitDB(lyricsFileReader)
 
 	port := ":8053"
 

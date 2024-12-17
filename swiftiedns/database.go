@@ -2,7 +2,7 @@ package swiftiedns
 
 import (
 	"encoding/csv"
-	"os"
+	"io"
 )
 
 type Song struct {
@@ -16,12 +16,8 @@ type Song struct {
 
 var Songs []Song
 
-func InitDB(fileName string) {
-	file, err := os.Open(fileName)
-	if err != nil {
-		panic(err)
-	}
-	r := csv.NewReader(file)
+func InitDB(reader io.Reader) {
+	r := csv.NewReader(reader)
 	records, err := r.ReadAll()
 	if err != nil {
 		panic(err)
