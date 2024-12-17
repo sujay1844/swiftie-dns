@@ -1,4 +1,4 @@
-package main
+package swiftiedns
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	"github.com/miekg/dns"
 )
 
-func handleDNSRequest(w dns.ResponseWriter, r *dns.Msg) {
+func HandleDNSRequest(w dns.ResponseWriter, r *dns.Msg) {
 	msg := dns.Msg{}
 	msg.SetReply(r)
 	msg.Authoritative = true

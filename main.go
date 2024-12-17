@@ -4,12 +4,16 @@ import (
 	"log"
 
 	"github.com/miekg/dns"
+
+	"github.com/sujay1844/swiftie-dns/swiftiedns"
 )
 
 func main() {
+	swiftiedns.InitDB("./data/ts_lyrics.csv")
+
 	port := ":8053"
 
-	dns.HandleFunc(".", handleDNSRequest)
+	dns.HandleFunc(".", swiftiedns.HandleDNSRequest)
 
 	server := &dns.Server{
 		Addr: port,
