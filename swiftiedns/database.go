@@ -10,6 +10,7 @@ type Song struct {
 	Name      string
 	AlbumID   string
 	AlbumName string
+	AlbumPath string
 	Lyrics    string
 }
 
@@ -35,7 +36,8 @@ func InitDB(fileName string) {
 			Name:      record[1],
 			AlbumID:   record[2],
 			AlbumName: record[3],
-			Lyrics:    record[4],
+			AlbumPath: record[4],
+			Lyrics:    record[5],
 		}
 		Songs = append(Songs, song)
 	}
