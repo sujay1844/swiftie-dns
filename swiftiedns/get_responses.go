@@ -7,6 +7,7 @@ func getLyrics(songs Songs, name string) string {
 		if song.Name == name {
 			return song.Lyrics
 		}
+var ErrNoSongFound = fmt.Errorf("Song not found")
 	}
 	return "Song not found"
 }

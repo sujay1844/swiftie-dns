@@ -66,6 +66,10 @@ func HandleDNSRequest(songs Songs) dns.HandlerFunc {
 
 			responses, err := getResponses(songs, name)
 			if err != nil {
+				if err == ErrNoSongFound {
+					handleNoSongFound(w, r, question, err)
+					return
+				}
 				log.Printf("Failed to get responses: %v", err)
 				continue
 			}
@@ -84,4 +88,21 @@ func HandleDNSRequest(songs Songs) dns.HandlerFunc {
 			log.Printf("Failed to send response: %v", err)
 		}
 	}
+}
+
+func handleNoSongFound(w dns.ResponseWriter, r *dns.Msg, question dns.Question, err error) {
+	msg := dns.Msg{}
+	msg.SetReply(r)
+	msg.Authoritative = true
+
+	rr, err := dns.NewRR(fmt.Sprintf("%s 3600 IN TXT \"%s\"", question.Name, err.Error()))
+	if err != nil {
+		log.Printf("Failed to create TXT record: %v", err)
+	}
+	msg.Answer = append(msg.Answer, rr)
+	err = w.WriteMsg(&msg)
+	if err != nil {
+		log.Printf("Failed to send response: %v", err)
+	}
+
 }
