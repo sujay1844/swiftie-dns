@@ -17,6 +17,15 @@ type Song struct {
 
 type Songs []Song
 
+func (s Songs) Len() int {
+	return len(s)
+}
+
+func (s Songs) String(i int) string {
+	song := s[i]
+	return fmt.Sprintf("%s %s", song.Name, song.AlbumName)
+}
+
 func InitDB(reader io.Reader) (Songs, error) {
 	r := csv.NewReader(reader)
 	records, err := r.ReadAll()
