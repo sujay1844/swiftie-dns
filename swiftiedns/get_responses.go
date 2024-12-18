@@ -9,19 +9,21 @@ import (
 
 var ErrNoSongFound = fmt.Errorf("Song not found")
 
-func getLyrics(songs Songs, name string) (string, error) {
+func getSong(songs Songs, name string) (Song, error) {
 	results := fuzzy.FindFrom(name, songs)
 	if len(results) == 0 {
-		return "", ErrNoSongFound
+		return Song{}, ErrNoSongFound
 	}
 	song := songs[results[0].Index]
-	return song.Lyrics, nil
+	return song, nil
 }
 
 func getResponses(songs Songs, name string) ([]string, error) {
-	lyrics, err := getLyrics(songs, name)
+	song, err := getSong(songs, name)
 	if err != nil {
 		return nil, err
 	}
-	return strings.Split(lyrics, "\n"), nil
+	res := []string{"Name: " + song.Name, "Album: " + song.AlbumName, ""}
+	res = append(res, strings.Split(song.Lyrics, "\n")...)
+	return res, nil
 }
