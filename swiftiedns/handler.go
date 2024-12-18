@@ -51,34 +51,37 @@ func unescapeOctalHex(name string) string {
 	return result.String()
 }
 
-func HandleDNSRequest(w dns.ResponseWriter, r *dns.Msg) {
-	msg := dns.Msg{}
-	msg.SetReply(r)
-	msg.Authoritative = true
+func HandleDNSRequest(songs Songs) dns.HandlerFunc {
+	return func(w dns.ResponseWriter, r *dns.Msg) {
 
-	for _, question := range r.Question {
-		log.Printf("Received query for: %s, Type: %d", question.Name, question.Qtype)
+		msg := dns.Msg{}
+		msg.SetReply(r)
+		msg.Authoritative = true
 
-		name := strings.TrimSuffix(question.Name, ".")
-		name = unescapeDNSName(name)
+		for _, question := range r.Question {
+			log.Printf("Received query for: %s, Type: %d", question.Name, question.Qtype)
 
-		responses, err := getResponses(name)
-		if err != nil {
-			log.Printf("Failed to get responses: %v", err)
-			continue
-		}
-		for _, responseText := range responses {
-			rr, err := dns.NewRR(fmt.Sprintf("%s 3600 IN TXT \"%s\"", question.Name, responseText))
+			name := strings.TrimSuffix(question.Name, ".")
+			name = unescapeDNSName(name)
+
+			responses, err := getResponses(songs, name)
 			if err != nil {
-				log.Printf("Failed to create TXT record: %v", err)
+				log.Printf("Failed to get responses: %v", err)
 				continue
 			}
-			msg.Answer = append(msg.Answer, rr)
+			for _, responseText := range responses {
+				rr, err := dns.NewRR(fmt.Sprintf("%s 3600 IN TXT \"%s\"", question.Name, responseText))
+				if err != nil {
+					log.Printf("Failed to create TXT record: %v", err)
+					continue
+				}
+				msg.Answer = append(msg.Answer, rr)
+			}
 		}
-	}
 
-	err := w.WriteMsg(&msg)
-	if err != nil {
-		log.Printf("Failed to send response: %v", err)
+		err := w.WriteMsg(&msg)
+		if err != nil {
+			log.Printf("Failed to send response: %v", err)
+		}
 	}
 }

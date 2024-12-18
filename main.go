@@ -15,11 +15,14 @@ var lyricsFile string
 
 func main() {
 	lyricsFileReader := strings.NewReader(lyricsFile)
-	swiftiedns.InitDB(lyricsFileReader)
+	songs, err := swiftiedns.InitDB(lyricsFileReader)
+	if err != nil {
+		log.Fatalf("Failed to load data: %v", err)
+	}
 
 	port := ":8053"
 
-	dns.HandleFunc(".", swiftiedns.HandleDNSRequest)
+	dns.HandleFunc(".", swiftiedns.HandleDNSRequest(songs))
 
 	server := &dns.Server{
 		Addr: port,

@@ -2,6 +2,7 @@ package swiftiedns
 
 import (
 	"encoding/csv"
+	"fmt"
 	"io"
 )
 
@@ -14,18 +15,21 @@ type Song struct {
 	Lyrics    string
 }
 
-var Songs []Song
+type Songs []Song
 
-func InitDB(reader io.Reader) {
+func InitDB(reader io.Reader) (Songs, error) {
 	r := csv.NewReader(reader)
 	records, err := r.ReadAll()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-	Songs = make([]Song, 0, len(records))
+	songs := make([]Song, 0, len(records))
 	for i, record := range records {
 		if i == 0 {
 			continue
+		}
+		if len(record) != 6 {
+			return nil, fmt.Errorf("record on line %d: expected 6 fields, got %d", i+1, len(record))
 		}
 		song := Song{
 			ID:        record[0],
@@ -35,6 +39,7 @@ func InitDB(reader io.Reader) {
 			AlbumPath: record[4],
 			Lyrics:    record[5],
 		}
-		Songs = append(Songs, song)
+		songs = append(songs, song)
 	}
+	return songs, nil
 }

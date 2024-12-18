@@ -2,8 +2,8 @@ package swiftiedns
 
 import "strings"
 
-func getLyrics(name string) string {
-	for _, song := range Songs {
+func getLyrics(songs Songs, name string) string {
+	for _, song := range songs {
 		if song.Name == name {
 			return song.Lyrics
 		}
@@ -11,7 +11,7 @@ func getLyrics(name string) string {
 	return "Song not found"
 }
 
-func getResponses(name string) ([]string, error) {
-	lyrics := getLyrics(name)
+func getResponses(songs Songs, name string) ([]string, error) {
+	lyrics := getLyrics(songs, name)
 	return strings.Split(lyrics, "\n"), nil
 }
